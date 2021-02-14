@@ -9,7 +9,8 @@ namespace MiniRadarUI
     public class Parser
     {
 
-        public static Utilities.Node Split(string input)   //Splits input string to Angle and Distance values
+        //Splits input string to Angle and Distance values
+        public static Utilities.Node Split(string input)   
         {
             string[] inputSplitted = input.Split(';');
             Utilities.Node node;
@@ -30,7 +31,8 @@ namespace MiniRadarUI
             return node;
         }
 
-        public static Utilities.CommData CreateCommData(Utilities.COMMAND cmd, string data)
+        //Creates communication data
+        public static Utilities.CommData CreateCommData(Utilities.COMMAND cmd, string data) 
         {
             Utilities.CommData CommData;
             CommData.Command = cmd;

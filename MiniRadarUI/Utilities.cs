@@ -8,20 +8,31 @@ namespace MiniRadarUI
 {
     public class Utilities
     {
+        // Useable commands
         public enum COMMAND {NEW_DATA, MANUAL_CONTROL, AUTO_CONTROL, CLEAR_DATA, UNKNOWN_COMMAND};
+        // Connection status
         public enum CONNECTION {CONNECTION_OFF, CONNECTION_ON};
+        // Useable connection types
+        public enum COMMUNICATION_TYPE {SERIAL}
+        // For movement detection
         public enum MOVEMENT {NO_MOVEMENT, MOVING};
-        public struct Node  //Single Radar data for an Angle
+
+        // Radar data type
+        public struct Node  
         {
             public COMMAND Command;
             public double Angle;
             public double Distance;
         };
+
+        // Communication data object
         public struct CommData
         {
             public COMMAND Command;
             public string Data;
         };
+
+        // Returns inputted string as Command type
         public static COMMAND CommandControl(string input)
         {
             switch (Convert.ToInt32(input))
