@@ -16,22 +16,12 @@ namespace MiniRadarUI
         public enum COMMUNICATION_TYPE {SERIAL}
         // For movement detection
         public enum MOVEMENT {NO_MOVEMENT, MOVING};
-
-        // Radar data type
-        public struct Node  
-        {
-            public COMMAND Command;
-            public double Angle;
-            public double Distance;
-        };
-
         // Communication data object
-        public struct CommData
+        public class CommData
         {
             public COMMAND Command;
             public string Data;
         };
-
         // Returns inputted string as Command type
         public static COMMAND CommandControl(string input)
         {
