@@ -14,7 +14,8 @@ namespace MiniRadarUI
         public static int maxPrevValues;
         public static int numberOfData;
         public static int scale;
-        public const int movementDetectionConstant = 5;
+        public const int movementDetectionConstant = 3;
+        public const int maxDistance = 200;
         public static void InitValues()
         {
             for (int i = 0; i < numberOfData; i++)
@@ -34,7 +35,15 @@ namespace MiniRadarUI
                 {
                     values[angleIndex][i] = values[angleIndex][i + 1];
                 }
-                values[angleIndex][maxPrevValues - 1] = value;
+                if (value >= 0 && value <= maxDistance)
+                    values[angleIndex][maxPrevValues - 1] = value;
+                else
+                {
+                    if (value < 0)
+                        values[angleIndex][maxPrevValues - 1] = 0;
+                    else if (value > scale * maxDistance)
+                        values[angleIndex][maxPrevValues - 1] = maxDistance;
+                }
             }           
         }
         public static float GetLastValue(int angleIndex)
@@ -48,8 +57,8 @@ namespace MiniRadarUI
         {
             Point endPoint = new Point(0, 0);
 
-            endPoint.X = (int)(scale * value * Math.Cos((angle + 7.5f) * (Math.PI / 180)));
-            endPoint.Y = (int)(scale * value * Math.Sin((angle + 7.5f) * (Math.PI / 180)));
+            endPoint.X = (int)(scale * value * Math.Cos((angle + MainForm.resolution / 2) * (Math.PI / 180)));
+            endPoint.Y = (int)(scale * value * Math.Sin((angle + MainForm.resolution / 2) * (Math.PI / 180)));
 
             return endPoint;
         }

@@ -15,7 +15,7 @@ namespace MiniRadarUI
     {
 
         public float value = 0.0f;
-        private int resolution = 15;
+        public static float resolution = 15.0f;
         private int r = 60, maxCircles = 20; // r = 2 * desired resolution, maxCircles = maximum amount of background reference circles ->every circles = 10cm real distance
         private int redDotRadius = 18;
         private Brush brush;
@@ -27,7 +27,7 @@ namespace MiniRadarUI
 
         //Test variables
 
-        private float counter1 = 0, multiplier = 1.2f;
+        private float counter1 = 0, multiplier = 1.2f, buf = 0.0f;
        
         public MainForm()
         {
@@ -42,27 +42,12 @@ namespace MiniRadarUI
         {
             timer = new Timer();
             timer.Interval = 500;
-            timer.Tick += TimerOneSecTick;
+            timer.Tick += TimerTickEvent;
             timer.Start();
-            RadarCore.numberOfData = 180 / resolution;
-            RadarCore.maxPrevValues = 5;
+            RadarCore.numberOfData = (int)(180 / resolution);
+            RadarCore.maxPrevValues = 6;
             RadarCore.scale = 3;
             RadarCore.InitValues();
-            // Test data
-            RadarCore.AddNewValue(50.0f, 0);
-            RadarCore.AddNewValue(90.0f, 1);
-            RadarCore.AddNewValue(180.0f, 2);
-            RadarCore.AddNewValue(80.0f, 3);
-            RadarCore.AddNewValue(100.0f, 4);
-            RadarCore.AddNewValue(200.0f, 5);
-            RadarCore.AddNewValue(85.0f, 6);
-            RadarCore.AddNewValue(90.0f, 7);
-            RadarCore.AddNewValue(110.0f, 8);
-            RadarCore.AddNewValue(20.0f, 9);
-            RadarCore.AddNewValue(190.0f, 10);
-            RadarCore.AddNewValue(55.0f, 11);
-
-
         }
         private void updateDrawing()
         {
@@ -87,71 +72,70 @@ namespace MiniRadarUI
                             {
                                 pen2.Width = 2;
                                 pen2.Color = Color.Green;
-                            }
-                                
+                            }                               
                             rect.X = 0 - r / 2 * i;
                             rect.Y = 0 - r / 2 * i;
                             rect.Width = r * i;
                             rect.Height = r * i;
-
                             g.DrawArc(pen2, rect, 0.0f, 180.0f);
                         }
-
                         pen2.Width = 2;
                         pen2.Color = Color.Green;
-
                         for (int i = 0; i <= 12; i++)
                         {
                             g.DrawLine(pen2, 0, 0, (float)((r * maxCircles * 0.5f + 30) * (Math.Cos(i * resolution * (Math.PI / 180)))), (float)((r * maxCircles * 0.5f + 30) * (Math.Sin(i * resolution * (Math.PI / 180)))));
                         }
                     }
-
                     for (int i = 0; i < RadarCore.numberOfData; i++)
                     {
                         value = RadarCore.GetLastValue(i);
                         tempPoint = RadarCore.CalculatePoint(value, i * resolution);
 
                         if (RadarCore.DetectMovement(i) == Utilities.MOVEMENT.MOVING)
+                        {
                             brush = Brushes.Red;
+                            g.FillEllipse(brush, tempPoint.X - redDotRadius / 2, tempPoint.Y - redDotRadius / 2, redDotRadius, redDotRadius);
+                        }                           
                         else
-                            brush = Brushes.Gray;
-
-                        g.FillEllipse(brush, tempPoint.X - redDotRadius / 2, tempPoint.Y - redDotRadius / 2, redDotRadius, redDotRadius);
+                        {
+                            if(showStaticObjects.Checked)
+                            {
+                                brush = Brushes.Gray;
+                                g.FillEllipse(brush, tempPoint.X - redDotRadius / 2, tempPoint.Y - redDotRadius / 2, redDotRadius, redDotRadius);
+                            }
+                        }                                               
                     }                   
                }
             }
         }
-        private void TimerOneSecTick(object sender, EventArgs e)
+        private void TimerTickEvent(object sender, EventArgs e)
         {
             dateLabel.Text = DateTime.Now.Date.ToShortDateString();
             timeLabel.Text = DateTime.Now.ToShortTimeString();
-
-            if(counter1 >= 5)
+            if(counter1 >= 5 && counter1 <= 10)
             {
-                multiplier = 0.95f;
-            }
-            
+                multiplier = -1.00f;
+            }          
             if(counter1 > 10)
             {
                 counter1 = 0;
-                multiplier = 1.05f;
+                multiplier = 1.00f;
             }
-
-            RadarCore.AddNewValue(50.0f * multiplier, 0);
-            RadarCore.AddNewValue(90.0f * multiplier, 1);
-            RadarCore.AddNewValue(180.0f * multiplier, 2);
-            RadarCore.AddNewValue(80.0f * multiplier, 3);
-            RadarCore.AddNewValue(100.0f * multiplier, 4);
-            RadarCore.AddNewValue(200.0f * multiplier, 5);
-            RadarCore.AddNewValue(85.0f * multiplier, 6);
-            RadarCore.AddNewValue(90.0f * multiplier, 7);
-            RadarCore.AddNewValue(110.0f * multiplier, 8);
-            RadarCore.AddNewValue(70.0f * multiplier, 9);
-            RadarCore.AddNewValue(190.0f * multiplier, 10);
-            RadarCore.AddNewValue(55.0f * multiplier, 11);
+            buf += 10 * multiplier; 
+            RadarCore.AddNewValue(20.0f  + buf, 0);
+            RadarCore.AddNewValue(150.0f + buf, 1);
+            RadarCore.AddNewValue(180.0f + buf, 2);
+            RadarCore.AddNewValue(60.0f + buf, 3);
+            RadarCore.AddNewValue(180.0f - buf, 4);
+            RadarCore.AddNewValue(200.0f - buf, 5);
+            RadarCore.AddNewValue(25.0f, 6);
+            RadarCore.AddNewValue(90.0f + buf, 7);
+            RadarCore.AddNewValue(110.0f + buf, 8);
+            RadarCore.AddNewValue(70.0f - buf, 9);
+            RadarCore.AddNewValue(140.0f + buf, 10);
+            RadarCore.AddNewValue(75.0f - buf, 11);
 
             counter1 += 1;
-
             updateDrawing();
         }
     }

@@ -36,6 +36,7 @@ namespace MiniRadarUI
             this.topPanel = new System.Windows.Forms.Panel();
             this.timeLabel = new System.Windows.Forms.Label();
             this.dateLabel = new System.Windows.Forms.Label();
+            this.showStaticObjects = new System.Windows.Forms.CheckBox();
             this.leftPanel.SuspendLayout();
             this.topPanel.SuspendLayout();
             this.SuspendLayout();
@@ -43,6 +44,7 @@ namespace MiniRadarUI
             // leftPanel
             // 
             this.leftPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.leftPanel.Controls.Add(this.showStaticObjects);
             this.leftPanel.Controls.Add(this.settingsButton);
             this.leftPanel.Controls.Add(this.exitAppButton);
             this.leftPanel.Location = new System.Drawing.Point(0, 24);
@@ -111,6 +113,17 @@ namespace MiniRadarUI
             this.dateLabel.TabIndex = 0;
             this.dateLabel.Text = "14.02.2021";
             // 
+            // showStaticObjects
+            // 
+            this.showStaticObjects.AutoSize = true;
+            this.showStaticObjects.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.showStaticObjects.Location = new System.Drawing.Point(7, 708);
+            this.showStaticObjects.Name = "showStaticObjects";
+            this.showStaticObjects.Size = new System.Drawing.Size(193, 30);
+            this.showStaticObjects.TabIndex = 2;
+            this.showStaticObjects.Text = "SHOW STATIC";
+            this.showStaticObjects.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -129,6 +142,7 @@ namespace MiniRadarUI
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.leftPanel.ResumeLayout(false);
+            this.leftPanel.PerformLayout();
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
             this.ResumeLayout(false);
@@ -143,6 +157,7 @@ namespace MiniRadarUI
         private System.Windows.Forms.Label timeLabel;
         private System.Windows.Forms.Button exitAppButton;
         private System.Windows.Forms.Button settingsButton;
+        private System.Windows.Forms.CheckBox showStaticObjects;
     }
 }
 
