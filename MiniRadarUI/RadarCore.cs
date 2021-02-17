@@ -14,6 +14,7 @@ namespace MiniRadarUI
         public static int maxPrevValues;
         public static int numberOfData;
         public static int scale;
+        public const int movementDetectionConstant = 5;
         public static void InitValues()
         {
             for (int i = 0; i < numberOfData; i++)
@@ -43,24 +44,25 @@ namespace MiniRadarUI
             else
                 return 0.0f;
         }
-        public static Point CalculateEndPoint(float value, float angle)
+        public static Point CalculatePoint(float value, float angle)
         {
             Point endPoint = new Point(0, 0);
 
-            endPoint.X = (int)(scale * value * Math.Cos(angle * (Math.PI / 180)));
-            endPoint.Y = (int)(scale * value * Math.Sin(angle * (Math.PI / 180)));
+            endPoint.X = (int)(scale * value * Math.Cos((angle + 7.5f) * (Math.PI / 180)));
+            endPoint.Y = (int)(scale * value * Math.Sin((angle + 7.5f) * (Math.PI / 180)));
 
             return endPoint;
         }
 
-        public static Point CalculateNextPoint(float value, float angle)
+        public static Utilities.MOVEMENT DetectMovement (int angleIndex)
         {
-            Point endPoint = new Point(0, 0);
+            float sumOfDistances = values[angleIndex].Sum();
+            float avgOfDistances = sumOfDistances / values[angleIndex].Count();
 
-            endPoint.X = (int)(scale * value * Math.Cos((angle + 180 / numberOfData) * (Math.PI / 180)));
-            endPoint.Y = (int)(scale * value * Math.Sin((angle + 180 / numberOfData) * (Math.PI / 180)));
-
-            return endPoint;
+            if (avgOfDistances < values[angleIndex][maxPrevValues - 1] + movementDetectionConstant && avgOfDistances > values[angleIndex][maxPrevValues - 1] - movementDetectionConstant)
+                return Utilities.MOVEMENT.STATIC;
+            else
+                return Utilities.MOVEMENT.MOVING;
         }
     }
 }

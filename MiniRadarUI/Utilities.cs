@@ -15,7 +15,7 @@ namespace MiniRadarUI
         // Useable connection types
         public enum COMMUNICATION_TYPE {SERIAL}
         // For movement detection
-        public enum MOVEMENT {NO_MOVEMENT, MOVING};
+        public enum MOVEMENT {STATIC, MOVING};
         // Communication data object
         public class CommData
         {

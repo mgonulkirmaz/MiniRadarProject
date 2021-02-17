@@ -16,11 +16,14 @@ namespace MiniRadarUI
 
         public float value = 0.0f;
         private int resolution = 15;
-        private int r = 20, maxCircles = 60;
+        private int r = 60, maxCircles = 20; // r = 2 * desired resolution, maxCircles = maximum amount of background reference circles ->every circles = 10cm real distance
+        private int redDotRadius = 18;
+        private Brush brush;
 
-        private Point origin = new Point(620 + 200, 467 + 26 + 180);
+        private Point origin = new Point(620 + 200, 26 + 700);
         private Point tempPoint = new Point(0, 0);
         private Point prevPoint = new Point(600, 0);
+        private Rectangle rect = new Rectangle(0, 0, 100, 100);
 
         //Test variables
 
@@ -38,11 +41,11 @@ namespace MiniRadarUI
         private void MainForm_Load(object sender, EventArgs e)
         {
             timer = new Timer();
-            timer.Interval = 1000;
+            timer.Interval = 500;
             timer.Tick += TimerOneSecTick;
             timer.Start();
             RadarCore.numberOfData = 180 / resolution;
-            RadarCore.maxPrevValues = 10;
+            RadarCore.maxPrevValues = 5;
             RadarCore.scale = 3;
             RadarCore.InitValues();
             // Test data
@@ -61,27 +64,6 @@ namespace MiniRadarUI
 
 
         }
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            using (Graphics g = this.CreateGraphics())
-            {
-                g.TranslateTransform(origin.X, origin.Y);
-                g.ScaleTransform(1.0f, -1.0f);
-                g.Clear(this.BackColor);
-                using (Pen pen = new Pen(ControlPaint.Light(Color.Green), 0.1f))
-                {
-                    for (int i = 1; i <= maxCircles; i++)
-                    {
-                        g.DrawArc(pen, 0 - (r / 2) * i, 0 - (r / 2) * i, r * i, r * i, 0.0f, 180.0f);
-                    }
-
-                    for (int i = 0; i <= 180 / resolution; i++)
-                    {
-                        g.DrawLine(pen, 0, 0, (float)((r * maxCircles * 0.5f + 30) * (Math.Cos(i * 15 * (Math.PI / 180)))), (float)((r * maxCircles * 0.5f + 30) * (Math.Sin(i * 15 * (Math.PI / 180)))));
-                    }
-                }
-            }
-        }
         private void updateDrawing()
         {
             using (Graphics g = this.CreateGraphics())
@@ -90,17 +72,33 @@ namespace MiniRadarUI
                 g.ScaleTransform(1.0f, -1.0f);
                 g.Clear(this.BackColor);
 
-                prevPoint.X = 600;
-                prevPoint.X = 0;
-
                 using (Pen pen = new Pen(Color.White, 2))
                 {
-                    using (Pen pen2 = new Pen(ControlPaint.Light(Color.Green), 1))
+                    using (Pen pen2 = new Pen(ControlPaint.Light(Color.Green), 2))
                     {
                         for (int i = 1; i <= maxCircles; i++)
                         {
-                            g.DrawArc(pen2, 0 - (r / 2) * i, 0 - (r / 2) * i, r * i, r * i, 0.0f, 180.0f);
+                            if (i % 5 == 0)
+                            {
+                                pen2.Width = 4;
+                                pen2.Color = ControlPaint.Light(Color.Green);
+                            }                                 
+                            else
+                            {
+                                pen2.Width = 2;
+                                pen2.Color = Color.Green;
+                            }
+                                
+                            rect.X = 0 - r / 2 * i;
+                            rect.Y = 0 - r / 2 * i;
+                            rect.Width = r * i;
+                            rect.Height = r * i;
+
+                            g.DrawArc(pen2, rect, 0.0f, 180.0f);
                         }
+
+                        pen2.Width = 2;
+                        pen2.Color = Color.Green;
 
                         for (int i = 0; i <= 12; i++)
                         {
@@ -111,17 +109,14 @@ namespace MiniRadarUI
                     for (int i = 0; i < RadarCore.numberOfData; i++)
                     {
                         value = RadarCore.GetLastValue(i);
-                        tempPoint = RadarCore.CalculateEndPoint(value, i * resolution);
+                        tempPoint = RadarCore.CalculatePoint(value, i * resolution);
 
-                        if(i != 0)
-                            g.DrawLine(pen, prevPoint.X, prevPoint.Y, tempPoint.X, tempPoint.Y);
+                        if (RadarCore.DetectMovement(i) == Utilities.MOVEMENT.MOVING)
+                            brush = Brushes.Red;
+                        else
+                            brush = Brushes.Gray;
 
-                        prevPoint = RadarCore.CalculateNextPoint(value, i * resolution);
-
-                        if (tempPoint.X != 0 || tempPoint.Y != 0)
-                        {
-                            g.DrawArc(pen, 0 - value * RadarCore.scale, 0 - value * RadarCore.scale, value * 2 * RadarCore.scale, value * 2 * RadarCore.scale, 0.0f + i * resolution, resolution);
-                        }
+                        g.FillEllipse(brush, tempPoint.X - redDotRadius / 2, tempPoint.Y - redDotRadius / 2, redDotRadius, redDotRadius);
                     }                   
                }
             }
