@@ -12,11 +12,11 @@ namespace MiniRadarUI
         public static Dictionary<int, List<float>> values = new Dictionary<int, List<float>>(); 
 
         public static int maxPrevValues;
-        public static int maxAngleCount;
+        public static int numberOfData;
         public static int scale;
         public static void InitValues()
         {
-            for (int i = 0; i < maxAngleCount; i++)
+            for (int i = 0; i < numberOfData; i++)
             {
                 values.Add(i, new List<float>());
                 for (int j = 0; j < maxPrevValues; j++)
@@ -25,9 +25,9 @@ namespace MiniRadarUI
                 }
             }
         }           
-        public static void AddNewNode(float value, int angleIndex)
+        public static void AddNewValue(float value, int angleIndex)
         {
-            if(angleIndex >= 0 && angleIndex < maxAngleCount)
+            if(angleIndex >= 0 && angleIndex < numberOfData)
             {
                 for (int i = 0; i < maxPrevValues - 1; i++)
                 {
@@ -38,7 +38,7 @@ namespace MiniRadarUI
         }
         public static float GetLastValue(int angleIndex)
         {
-            if (angleIndex >= 0 && angleIndex < maxAngleCount)
+            if (angleIndex >= 0 && angleIndex < numberOfData)
                 return values[angleIndex][maxPrevValues - 1];
             else
                 return 0.0f;
@@ -47,11 +47,18 @@ namespace MiniRadarUI
         {
             Point endPoint = new Point(0, 0);
 
-            if (value > 200)
-                value = 200;
-
             endPoint.X = (int)(scale * value * Math.Cos(angle * (Math.PI / 180)));
             endPoint.Y = (int)(scale * value * Math.Sin(angle * (Math.PI / 180)));
+
+            return endPoint;
+        }
+
+        public static Point CalculateNextPoint(float value, float angle)
+        {
+            Point endPoint = new Point(0, 0);
+
+            endPoint.X = (int)(scale * value * Math.Cos((angle + 180 / numberOfData) * (Math.PI / 180)));
+            endPoint.Y = (int)(scale * value * Math.Sin((angle + 180 / numberOfData) * (Math.PI / 180)));
 
             return endPoint;
         }
